@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Missió Badalona!</title>
+  <title>Missió Badalona! - Índex Temàtic</title>
   <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -17,21 +17,11 @@
     const { useState } = React;
 
     function MissioBadalona() {
-      const [pasActual, setPasActual] = useState(1);
-      const [idiomaSuport, setIdiomaSuport] = useState(true);
+      const [missioActual, setMissioActual] = useState(null); // null = Menú principal d'índex
+      const [idiomaSuport, setIdiomaSuport] = useState(true); // Control global del suport bilingüe
       const [diccionariObert, setDiccionariObert] = useState(false);
-      const [nomAlumne, setNomAlumne] = useState('');
-      const [resposta, setResposta] = useState(null);
-
-      const diccionari = [
-        { cat: 'Hola', ukr: 'Привіт', icone: '👋' },
-        { cat: 'Em dic', ukr: 'Мене звати', icone: '🏷️' },
-        { cat: 'Escola', ukr: 'Школа', icone: '🏫' },
-        { cat: 'Platja', ukr: 'Пляж', icone: '🏖️' },
-        { cat: 'Biblioteca', ukr: 'Бібліотека', icone: '📚' },
-        { cat: 'Gràcies', ukr: 'Дякую', icone: '🙏' },
-        { cat: 'Ajuda', ukr: 'Допомога', icone: '🆘' },
-      ];
+      const [categoriaFiltre, setCategoriaFiltre] = useState('tots');
+      const [paraulaCercada, setParaulaCercada] = useState('');
 
       const parlar = (text) => {
         if ('speechSynthesis' in window) {
@@ -41,184 +31,378 @@
         }
       };
 
+      // BASE DE DADES DE VOCABULARI I FRASES DE PISTA (DICCIONARI PERMANENT)
+      const diccionariComplet = [
+        // Salutacions
+        { cat: 'Hola', ukr: 'Привіт', icone: '👋', cat: 'salutacions' },
+        { cat: 'Bon dia', ukr: 'Доброго дня', icone: '☀️', cat: 'salutacions' },
+        { cat: 'Bona tarda', ukr: 'Доброго вечора', icone: '🌆', cat: 'salutacions' },
+        { cat: 'Bona nit', ukr: 'Добраніч', icone: '🌙', cat: 'salutacions' },
+        { cat: 'Adéu', ukr: 'До побачення', icone: '👋', cat: 'salutacions' },
+        // Frases útils
+        { cat: 'Puc anar al lavabo?', ukr: 'Можна в туалет?', icone: '🪠', cat: 'classe' },
+        { cat: 'Necessito ajut', ukr: 'Мені потрібна допомога', icone: '🆘', cat: 'classe' },
+        { cat: 'No ho entenc', ukr: 'Я не розумію', icone: '🤔', cat: 'classe' },
+        { cat: 'Gràcies', ukr: 'Дякую', icone: '🙏', cat: 'classe' },
+        { cat: 'Si us plau', ukr: 'Будь ласка', icone: '✨', cat: 'classe' },
+        // Calendari
+        { cat: 'Dilluns', ukr: 'Понеділок', icone: '📅', cat: 'temps' },
+        { cat: 'Matí', ukr: 'Ранок', icone: '🌅', cat: 'temps' },
+        { cat: 'Janer', ukr: 'Січень', icone: '❄️', cat: 'temps' },
+        // Direccions i preposicions
+        { cat: 'Recte', ukr: 'Прямо', icone: '⬆️', cat: 'direccions' },
+        { cat: 'A l\'esquerra', ukr: 'Ліворуч', icone: '⬅️', cat: 'direccions' },
+        { cat: 'A la dreta', ukr: 'Праворуч', icone: '➡️', cat: 'direccions' },
+        { cat: 'A sobre', ukr: 'На', icone: '🔝', cat: 'direccions' },
+        { cat: 'A sota', ukr: 'Під', icone: '🔚', cat: 'direccions' },
+      ];
+
+      // LLISTAT DE NIVELLS I MISSIONS (ÍNDEX COMPLET)
+      const indexMissions = [
+        {
+          id: 1,
+          titol: "1. Presentar-se i Salutacions",
+          sub: "Hola, em dic..., adéu, bon dia, bona tarda, bona nit",
+          icona: "👋",
+          color: "bg-blue-600",
+          conte: {
+            instruccio: "Mira i escolta com es presenta la Laia a Badalona",
+            ukrInstruccio: "Подивись і послухай, як відрекомендовується Лая",
+            targetes: [
+              { cat: "Hola! 👋", ukr: "Привіт!" },
+              { cat: "Em dic Laia 🏷️", ukr: "Мене звати Лая" },
+              { cat: "Bon dia ☀️", ukr: "Доброго дня" },
+              { cat: "Bona tarda 🌆", ukr: "Доброго вечора" },
+              { cat: "Bona nit 🌙", ukr: "Добраніч" },
+              { cat: "Adéu 👋", ukr: "До побачення" }
+            ]
+          }
+        },
+        {
+          id: 2,
+          titol: "2. Frases útils a classe",
+          sub: "Necessito..., vull..., puc anar al lavabo?, gràcies",
+          icona: "💬",
+          color: "bg-purple-600",
+          conte: {
+            instruccio: "Practica frases per comunicar-te amb la mestra i companys",
+            ukrInstruccio: "Практикуй фрази для спілкування з вчителем та однокласниками",
+            targetes: [
+              { cat: "Puc anar al lavabo? 🪠", ukr: "Можна в туалет?" },
+              { cat: "Necessito un llapis ✏️", ukr: "Мені потрібен олівець" },
+              { cat: "Vull aigua 💧", ukr: "Я хочу води" },
+              { cat: "Gràcies! 🙏", ukr: "Дякую!" },
+              { cat: "No ho entenc 🤔", ukr: "Я не розумію" }
+            ]
+          }
+        },
+        {
+          id: 3,
+          titol: "3. Vocabulari de l'escola i matèries",
+          sub: "Llibres, llapis, matemàtiques, ciències, música...",
+          icona: "🏫",
+          color: "bg-emerald-600",
+          conte: {
+            instruccio: "Aprèn les eines de classe i assignatures",
+            ukrInstruccio: "Вивчай шкільні предмети та приладдя",
+            targetes: [
+              { cat: "Mochila 🎒", ukr: "Рюкзак" },
+              { cat: "Llibre 📚", ukr: "Книга" },
+              { cat: "Matemàtiques ➕", ukr: "Математика" },
+              { cat: "Ciències 🧪", ukr: "Наука" },
+              { cat: "Música 🎵", ukr: "Музика" }
+            ]
+          }
+        },
+        {
+          id: 4,
+          titol: "4. Calendari, mesos, dies i parts del dia",
+          sub: "Dilluns a diumenge, gener a desembre, matí, tarda, nit",
+          icona: "📅",
+          color: "bg-amber-600",
+          conte: {
+            instruccio: "Organitza el temps i el calendari de la setmana",
+            ukrInstruccio: "Організовуй час та календар тижня",
+            targetes: [
+              { cat: "Dilluns 📅", ukr: "Понеділок" },
+              { cat: "Matí 🌅", ukr: "Ранок" },
+              { cat: "Tarda 🌆", ukr: "День/Вечір" },
+              { cat: "Gener ❄️", ukr: "Січень" },
+              { cat: "Setmana 🗓️", ukr: "Тиждень" }
+            ]
+          }
+        },
+        {
+          id: 5,
+          titol: "5. Els aliments i el menjar",
+          sub: "Fruita, pa, aigua, esmorzar, dinar, sopar",
+          icona: "🍎",
+          color: "bg-red-600",
+          conte: {
+            instruccio: "Vocabulari per al menjador i el mercat",
+            ukrInstruccio: "Словниковий запас для їдальні та ринку",
+            targetes: [
+              { cat: "Esmorzar 🥪", ukr: "Сніданок" },
+              { cat: "Poma 🍎", ukr: "Яблуко" },
+              { cat: "Pa 🥖", ukr: "Хліб" },
+              { cat: "Aigua 💧", ukr: "Вода" },
+              { cat: "Dinar 🍲", ukr: "Обід" }
+            ]
+          }
+        },
+        {
+          id: 6,
+          titol: "6. La roba i el vestuari",
+          sub: "Samarreta, pantalons, sabates, jaqueta, sabatilles",
+          icona: "👕",
+          color: "bg-teal-600",
+          conte: {
+            instruccio: "Què ens posem segons el temps que fa?",
+            ukrInstruccio: "Що ми одягаємо залежно від погоди?",
+            targetes: [
+              { cat: "Samarreta 👕", ukr: "Футболка" },
+              { cat: "Pantalons 👖", ukr: "Штани" },
+              { cat: "Sabates 👟", ukr: "Взуття" },
+              { cat: "Jaqueta 🧥", ukr: "Куртка" }
+            ]
+          }
+        },
+        {
+          id: 7,
+          titol: "7. La casa i les feines",
+          sub: "Cuina, habitació, metge, mestre, policia...",
+          icona: "🏠",
+          color: "bg-indigo-600",
+          conte: {
+            instruccio: "Les parts de la llar i les professions del barri",
+            ukrInstruccio: "Частини будинку та професії в районі",
+            targetes: [
+              { cat: "Cuina 🍳", ukr: "Кухня" },
+              { cat: "Habitació 🛏️", ukr: "Кімната" },
+              { cat: "Mestre / Mestra 👨‍🏫", ukr: "Вчитель" },
+              { cat: "Metge 🧑‍⚕️", ukr: "Лікар" }
+            ]
+          }
+        },
+        {
+          id: 8,
+          titol: "8. Descripció física i sensacions",
+          sub: "Alt, baix, fred, calor, alegre, em fa mal...",
+          icona: "👤",
+          color: "bg-rose-600",
+          conte: {
+            instruccio: "Com som i com ens trobem?",
+            ukrInstruccio: "Які ми та як почуваємося?",
+            targetes: [
+              { cat: "Tinc fred 🥶", ukr: "Мені холодно" },
+              { cat: "Tinc calor 🥵", ukr: "Мені жарко" },
+              { cat: "Em fa mal el cap 🤕", ukr: "У мене болить голова" },
+              { cat: "Alt / Baixa 📏", ukr: "Високий / Низька" }
+            ]
+          }
+        },
+        {
+          id: 9,
+          titol: "9. Botigues, direccions i preposicions",
+          sub: "Recte, esquerra, dreta, a sobre, a sota, farmàcia, mercat",
+          icona: "🗺️",
+          color: "bg-sky-600",
+          conte: {
+            instruccio: "Orientation per la ciutat de Badalona",
+            ukrInstruccio: "Орієнтування в місті Бадалона",
+            targetes: [
+              { cat: "Vés recte ⬆️", ukr: "Йди прямо" },
+              { cat: "A l'esquerra ⬅️", ukr: "Ліворуч" },
+              { cat: "A la dreta ➡️", ukr: "Праворуч" },
+              { cat: "A sobre 🔝", ukr: "На" },
+              { cat: "A sota 🔚", ukr: "Під" },
+              { cat: "Farmàcia 🏥", ukr: "Аптека" }
+            ]
+          }
+        }
+      ];
+
       return (
-        <div className="min-h-screen flex flex-col">
-          {/* Header */}
-          <header className="bg-blue-600 text-white p-4 shadow flex justify-between items-center sticky top-0 z-50">
-            <div className="flex items-center gap-2">
-              <span className="bg-yellow-400 text-slate-900 font-bold px-2 py-1 rounded text-sm">📍 Badalona</span>
-              <h1 className="font-black text-lg hidden sm:block">Missió Badalona! 🌊</h1>
+        <div className="min-h-screen flex flex-col bg-slate-100">
+          
+          {/* HEADER FIX I CONTROLS BILINGÜES */}
+          <header className="bg-blue-600 text-white p-4 shadow-md sticky top-0 z-50 flex justify-between items-center">
+            <div 
+              className="flex items-center gap-2 cursor-pointer hover:opacity-90"
+              onClick={() => setMissioActual(null)}
+            >
+              <span className="bg-yellow-400 text-slate-900 font-black px-2.5 py-1 rounded-lg text-sm shadow">📍 Badalona</span>
+              <h1 className="font-black text-xl tracking-wide hidden md:block">Missió Badalona! 🌊</h1>
             </div>
-            <div className="flex gap-2">
+
+            <div className="flex items-center gap-2">
+              {/* Botó Índex General */}
+              <button 
+                onClick={() => setMissioActual(null)}
+                className="bg-blue-800 hover:bg-blue-900 text-white px-3 py-1.5 rounded-lg text-xs font-bold border border-blue-400 flex items-center gap-1 shadow"
+              >
+                📚 Índex
+              </button>
+
+              {/* Selector On/Off Bilingüe Ucraïnès */}
               <button 
                 onClick={() => setIdiomaSuport(!idiomaSuport)}
-                className={`px-3 py-1 rounded text-xs font-bold border ${idiomaSuport ? 'bg-amber-100 text-amber-900 border-amber-400' : 'bg-blue-700 text-blue-200'}`}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold border shadow transition flex items-center gap-1 ${
+                  idiomaSuport ? 'bg-amber-100 text-amber-900 border-amber-400' : 'bg-blue-800 text-blue-200 border-blue-500'
+                }`}
               >
-                🌐 {idiomaSuport ? '🇺🇦 Ucraïnès ACTIU' : '🇺🇦 Sense Ucraïnès'}
+                🌐 {idiomaSuport ? '🇺🇦 Ucraïnès ACTIU' : '🇺🇦 Suport Desactivat'}
               </button>
+
+              {/* Botó Lupa Pista / Diccionari */}
               <button 
                 onClick={() => setDiccionariObert(true)}
-                className="bg-yellow-400 text-slate-900 px-3 py-1 rounded font-bold text-xs flex items-center gap-1 shadow"
+                className="bg-yellow-400 hover:bg-yellow-300 text-slate-900 px-3 py-1.5 rounded-lg font-bold text-xs flex items-center gap-1 shadow"
               >
                 🔍 Pista
               </button>
             </div>
           </header>
 
-          {/* Contingut del Joc */}
-          <main className="flex-1 max-w-2xl w-full mx-auto p-4 flex flex-col justify-center">
-            
-            {/* PAS 1: Descobreixo */}
-            {pasActual === 1 && (
-              <div className="bg-white p-6 rounded-2xl shadow-lg border">
-                <div className="bg-blue-50 p-3 rounded-xl border border-blue-200 mb-4 flex justify-between items-center">
-                  <div>
-                    <h2 className="font-bold text-blue-900">1. Mira i escolta / Подивись і послухай</h2>
-                    <p className="text-xs text-blue-700">Observa com es presenta la Laia.</p>
-                  </div>
-                  <button onClick={() => parlar("Mira i escolta")} className="text-2xl">🔊</button>
-                </div>
-
-                <div className="flex flex-col sm:flex-row items-center gap-4 my-6 bg-amber-50 p-6 rounded-2xl border-2 border-dashed border-amber-300">
-                  <div className="text-center">
-                    <div className="text-6xl bg-amber-200 w-24 h-24 rounded-full flex items-center justify-center border-4 border-white shadow">👧🏻</div>
-                    <span className="font-bold text-xs bg-amber-200 px-2 py-1 rounded mt-2 inline-block">Laia</span>
-                  </div>
-                  <div className="bg-white p-4 rounded-xl shadow border border-blue-300 flex-1 flex justify-between items-center">
-                    <div>
-                      <p className="text-xl font-black">Hola! 👋 Em dic Laia. I tu?</p>
-                      {idiomaSuport && <p className="text-sm text-slate-500 italic">Привіт! Мене звати Лая. А тебе?</p>}
-                    </div>
-                    <button onClick={() => parlar("Hola! Em dic Laia. I tu?")} className="text-2xl bg-green-500 text-white p-2 rounded-lg">🔊</button>
-                  </div>
-                </div>
-
-                <button onClick={() => setPasActual(2)} className="w-full bg-blue-600 text-white font-bold py-3 rounded-xl shadow">
-                  Continuar / Продовжити ➡️
-                </button>
+          {/* MENÚ PRINCIPAL: ÍNDEX DE MISSIONS I VOCABULARI */}
+          {missioActual === null ? (
+            <main className="flex-1 max-w-5xl w-full mx-auto p-6">
+              <div className="text-center mb-8">
+                <h2 className="text-3xl font-black text-slate-800 mb-2">
+                  Índex de Missions / Навчальні місії
+                </h2>
+                <p className="text-slate-600 max-w-xl mx-auto text-sm">
+                  Tria qualsevol bloc de vocabulari o situació comunicativa per començar a practicar.
+                </p>
               </div>
-            )}
 
-            {/* PAS 2: Entenc */}
-            {pasActual === 2 && (
-              <div className="bg-white p-6 rounded-2xl shadow-lg border">
-                <h2 className="font-bold text-lg mb-4 text-purple-900">2. Què pots dir tu? / Що ти можеш сказати?</h2>
-                <div className="space-y-3 mb-6">
-                  {[
-                    { id: 1, text: "Em dic...", sub: "Мене звати...", ok: true, icon: "🏷️" },
-                    { id: 2, text: "Bon dia!", sub: "Доброго дня!", ok: false, icon: "👋" },
-                    { id: 3, text: "No ho entenc", sub: "Я не розумію", ok: false, icon: "🤔" }
-                  ].map(o => (
+              {/* Llista en quadreta de tots els mòduls */}
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {indexMissions.map((m) => (
+                  <div 
+                    key={m.id}
+                    onClick={() => setMissioActual(m.id)}
+                    className="bg-white rounded-2xl shadow-md border-2 border-slate-200 hover:border-blue-500 hover:shadow-xl transition cursor-pointer overflow-hidden flex flex-col"
+                  >
+                    <div className={`${m.color} text-white p-5 flex items-center justify-between`}>
+                      <span className="text-4xl">{m.icona}</span>
+                      <span className="text-xs font-bold bg-black/20 px-2 py-1 rounded uppercase">Mòdul {m.id}</span>
+                    </div>
+                    <div className="p-5 flex-1 flex flex-col justify-between">
+                      <div>
+                        <h3 className="font-bold text-lg text-slate-800 mb-1">{m.titol}</h3>
+                        <p className="text-slate-500 text-xs">{m.sub}</p>
+                      </div>
+                      <button className="mt-4 w-full bg-slate-900 text-white font-bold py-2 rounded-xl text-xs flex items-center justify-center gap-1">
+                        Practicar ara ➡️
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </main>
+          ) : (
+            /* VISTA DE LA MISSIÓ SELECCIONADA */
+            <main className="flex-1 max-w-3xl w-full mx-auto p-6 flex flex-col justify-center">
+              {(() => {
+                const missio = indexMissions.find(m => m.id === missioActual);
+                return (
+                  <div className="bg-white rounded-3xl p-6 shadow-xl border border-slate-200">
+                    
+                    {/* Capçalera del mòdul */}
+                    <div className="flex justify-between items-center mb-6 pb-4 border-b">
+                      <div>
+                        <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded">
+                          Mòdul {missio.id}
+                        </span>
+                        <h2 className="text-2xl font-black text-slate-800 mt-1">{missio.titol}</h2>
+                      </div>
+                      <button 
+                        onClick={() => setMissioActual(null)}
+                        className="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-xl font-bold text-xs"
+                      >
+                        ⬅️ Tornar a l'índex
+                      </button>
+                    </div>
+
+                    {/* Enunciat bilingüe adaptatiu */}
+                    <div className="bg-blue-50 p-4 rounded-2xl border border-blue-200 mb-6 flex justify-between items-center">
+                      <div>
+                        <p className="font-bold text-blue-900 text-base">👂 {missio.conte.instruccio}</p>
+                        {idiomaSuport && (
+                          <p className="text-xs text-blue-700 italic mt-0.5">{missio.conte.ukrInstruccio}</p>
+                        )}
+                      </div>
+                      <button 
+                        onClick={() => parlar(missio.conte.instruccio)}
+                        className="bg-blue-500 text-white p-3 rounded-xl shadow hover:bg-blue-600"
+                      >
+                        🔊
+                      </button>
+                    </div>
+
+                    {/* Targetes interactives de vocabulari / frases */}
+                    <div className="grid sm:grid-cols-2 gap-4 mb-6">
+                      {missio.conte.targetes.map((item, idx) => (
+                        <div 
+                          key={idx}
+                          className="bg-amber-50 p-4 rounded-2xl border-2 border-amber-200 flex justify-between items-center shadow-sm"
+                        >
+                          <div>
+                            <p className="font-black text-lg text-slate-800">{item.cat}</p>
+                            {idiomaSuport && (
+                              <p className="text-xs text-slate-500 font-medium">{item.ukr}</p>
+                            )}
+                          </div>
+                          <button 
+                            onClick={() => parlar(item.cat)}
+                            className="bg-amber-400 text-slate-900 p-2.5 rounded-xl hover:bg-amber-300 font-bold"
+                          >
+                            🔊
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+
                     <button 
-                      key={o.id}
-                      onClick={() => { setResposta(o.id); parlar(o.text); }}
-                      className={`w-full p-4 rounded-xl border-2 text-left flex justify-between items-center ${resposta === o.id ? (o.ok ? 'bg-green-50 border-green-500' : 'bg-red-50 border-red-400') : 'bg-slate-50'}`}
+                      onClick={() => setMissioActual(null)}
+                      className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3.5 rounded-2xl shadow-lg transition text-center"
                     >
-                      <div>
-                        <p className="font-bold">{o.icon} {o.text}</p>
-                        {idiomaSuport && <p className="text-xs text-slate-500">{o.sub}</p>}
-                      </div>
-                      {resposta === o.id && o.ok && <span>✅</span>}
+                      Completar Mòdul i Tornar / Завершити 🏆
                     </button>
-                  ))}
-                </div>
-                {resposta === 1 && (
-                  <button onClick={() => setPasActual(3)} className="w-full bg-green-600 text-white font-bold py-3 rounded-xl shadow">
-                    Molt bé! / Молодець! ➡️
-                  </button>
-                )}
-              </div>
-            )}
-
-            {/* PAS 3: Practico */}
-            {pasActual === 3 && (
-              <div className="bg-white p-6 rounded-2xl shadow-lg border">
-                <h2 className="font-bold text-lg mb-4 text-emerald-900">3. Com et dius tu? / Як тебе звати?</h2>
-                <div className="my-4 space-y-4">
-                  <div className="flex items-center gap-2 bg-slate-50 p-3 rounded-xl border">
-                    <span className="font-bold">Em dic:</span>
-                    <input 
-                      type="text" 
-                      value={nomAlumne} 
-                      onChange={(e) => setNomAlumne(e.target.value)}
-                      placeholder="Escriu el teu nom..." 
-                      className="p-2 border rounded flex-1 font-bold"
-                    />
                   </div>
-                  {nomAlumne && (
-                    <div className="bg-amber-100 p-3 rounded-xl flex justify-between items-center">
-                      <p className="font-bold text-amber-900">🗣️ "Em dic {nomAlumne}"</p>
-                      <button onClick={() => parlar(`Em dic ${nomAlumne}`)} className="text-xl">🔊</button>
-                    </div>
-                  )}
-                </div>
-                {nomAlumne && (
-                  <button onClick={() => setPasActual(4)} className="w-full bg-blue-600 text-white font-bold py-3 rounded-xl shadow">
-                    Anar a la platja de Badalona 🏖️ ➡️
-                  </button>
-                )}
-              </div>
-            )}
+                );
+              })()}
+            </main>
+          )}
 
-            {/* PAS 4: Em comunico */}
-            {pasActual === 4 && (
-              <div className="bg-white p-6 rounded-2xl shadow-lg border text-center">
-                <h2 className="font-bold text-lg mb-4 text-sky-900">4. Situació a la Platja 🏖️</h2>
-                <div className="bg-sky-50 p-4 rounded-xl space-y-3 mb-6">
-                  <div className="bg-white p-3 rounded-lg border text-left flex justify-between items-center">
-                    <p>👧🏻 <strong>Laia:</strong> Hola! Em dic Laia. Com et dius?</p>
-                    <button onClick={() => parlar("Hola! Em dic Laia. Com et dius?")}>🔊</button>
-                  </div>
-                  <div className="bg-green-100 p-3 rounded-lg border border-green-300 text-left flex justify-between items-center">
-                    <p>🧑🏻‍🎓 <strong>Tu:</strong> Hola, Laia! Em dic {nomAlumne}.</p>
-                    <button onClick={() => parlar(`Hola, Laia! Em dic ${nomAlumne}.`)}>🔊</button>
-                  </div>
-                </div>
-                <button onClick={() => setPasActual(5)} className="w-full bg-green-600 text-white font-bold py-3 rounded-xl shadow">
-                  Completar Missió! 🎉
-                </button>
-              </div>
-            )}
-
-            {/* PAS 5: Ho he après! */}
-            {pasActual === 5 && (
-              <div className="bg-white p-6 rounded-2xl shadow-lg border text-center">
-                <div className="text-6xl mb-2">🏆</div>
-                <h2 className="text-2xl font-black">Felicitats, {nomAlumne}!</h2>
-                <p className="text-slate-600 mb-4">Passaport Lingüístic actualitzat:</p>
-                <div className="bg-amber-50 p-4 rounded-xl border text-left space-y-2 mb-6">
-                  <p className="font-bold text-green-700">✅ Ja puc saludar en català (Hola! 👋)</p>
-                  <p className="font-bold text-green-700">✅ Ja puc dir el meu nom (Em dic {nomAlumne})</p>
-                </div>
-                <button onClick={() => setPasActual(1)} className="bg-blue-600 text-white font-bold py-2 px-6 rounded-xl">
-                  Tornar a jugar 🔄
-                </button>
-              </div>
-            )}
-          </main>
-
-          {/* Modal Diccionari */}
+          {/* DICCIONARI DE PISTA PERMANENT (LUPA 🔍) */}
           {diccionariObert && (
-            <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-              <div className="bg-white rounded-2xl max-w-sm w-full p-4 border-4 border-yellow-400">
-                <div className="flex justify-between items-center mb-3">
-                  <h3 className="font-bold">🔍 Diccionari de Pistes</h3>
-                  <button onClick={() => setDiccionariObert(false)} className="font-bold text-xl">✕</button>
+            <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+              <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border-4 border-yellow-400">
+                <div className="flex justify-between items-center mb-4">
+                  <div className="flex items-center gap-2">
+                    <span className="text-2xl">🔍</span>
+                    <h3 className="font-bold text-lg">Diccionari de Pistes / Словник</h3>
+                  </div>
+                  <button onClick={() => setDiccionariObert(false)} className="font-bold text-xl p-1">✕</button>
                 </div>
-                <div className="space-y-2 max-h-60 overflow-y-auto">
-                  {diccionari.map((item, i) => (
-                    <div key={i} className="flex justify-between items-center p-2 bg-slate-50 rounded border">
+
+                <div className="space-y-2 max-h-72 overflow-y-auto pr-1">
+                  {diccionariComplet.map((item, i) => (
+                    <div key={i} className="flex justify-between items-center p-3 bg-slate-50 rounded-xl border border-slate-200">
                       <div>
-                        <p className="font-bold">{item.icone} {item.cat}</p>
-                        <p className="text-xs text-slate-500">{item.ukr}</p>
+                        <p className="font-bold text-slate-800">{item.icone} {item.cat}</p>
+                        {idiomaSuport && <p className="text-xs text-slate-500">{item.ukr}</p>}
                       </div>
-                      <button onClick={() => parlar(item.cat)} className="text-lg">🔊</button>
+                      <button onClick={() => parlar(item.cat)} className="text-lg bg-blue-50 text-blue-600 p-2 rounded-lg">🔊</button>
                     </div>
                   ))}
                 </div>
               </div>
             </div>
           )}
+
         </div>
       );
     }
