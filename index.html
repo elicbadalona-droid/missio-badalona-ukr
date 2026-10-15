@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Missió Badalona!</title>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100 font-sans text-slate-800">
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState } = React;
+
+    function MissioBadalona() {
+      const [pasActual, setPasActual] = useState(1);
+      const [idiomaSuport, setIdiomaSuport] = useState(true);
+      const [diccionariObert, setDiccionariObert] = useState(false);
+      const [nomAlumne, setNomAlumne] = useState('');
+      const [resposta, setResposta] = useState(null);
+
+      const diccionari = [
+        { cat: 'Hola', ukr: 'Привіт', icone: '👋' },
+        { cat: 'Em dic', ukr: 'Мене звати', icone: '🏷️' },
+        { cat: 'Escola', ukr: 'Школа', icone: '🏫' },
+        { cat: 'Platja', ukr: 'Пляж', icone: '🏖️' },
+        { cat: 'Biblioteca', ukr: 'Бібліотека', icone: '📚' },
+        { cat: 'Gràcies', ukr: 'Дякую', icone: '🙏' },
+        { cat: 'Ajuda', ukr: 'Допомога', icone: '🆘' },
+      ];
+
+      const parlar = (text) => {
+        if ('speechSynthesis' in window) {
+          const u = new SpeechSynthesisUtterance(text);
+          u.lang = 'ca-ES';
+          window.speechSynthesis.speak(u);
+        }
+      };
+
+      return (
+        <div className="min-h-screen flex flex-col">
+          <header className="bg-blue-600 text-white p-4 shadow flex justify-between items-center sticky top-0 z-50">
+            <div className="flex items-center gap-2">
+              <span className="bg-yellow-400 text-slate-900 font-bold px-2 py-1 rounded text-sm">📍 Badalona</span>
+              <h1 className="font-black text-lg hidden sm:block">Missió Badalona! 🌊</h1>
+            </div>
+            <div className="flex gap-2">
+              <button 
+                onClick={() => setIdiomaSuport(!idiomaSuport)}
+                className={`px-3 py-1 rounded text-xs font-bold border ${idiomaSuport ? 'bg-amber-100 text-amber-900 border-amber-400' : 'bg-blue-700 text-blue-200'}`}
+              >
+                🌐 {idiomaSuport ? '🇺🇦 Ucraïnès ACTIU' : '🇺🇦 Sense Ucraïnès'}
+              </button>
+              <button 
+                onClick={() => setDiccionariObert(true)}
+                className="bg-yellow-400 text-slate-900 px-3 py-1 rounded font-bold text-xs flex items-center gap-1 shadow"
+              >
+                🔍 Pista
+              </button>
+            </div>
+          </header>
+
+          <main className="flex-1 max-w-2xl w-full mx-auto p-4 flex flex-col justify-center">
+            {pasActual === 1 && (
+              <div className="bg-white p-6 rounded-2xl shadow-lg border">
+                <div className="bg-blue-50 p-3 rounded-xl border border-blue-200 mb-4 flex justify-between items-center">
+                  <div>
+                    <h2 className="font-bold text-blue-900">1. Mira i escolta / Подивись і послухай</h2>
+                    <p className="text-xs text-blue-700">Observa com es presenta la Laia.</p>
+                  </div>
+                  <button onClick={() => parlar("Mira i escolta")} className="text-2xl">🔊</button>
+                </div>
+
+                <div className="flex flex-col sm:flex-row items-center gap-4 my-6 bg-amber-50 p-6 rounded-2xl border-2 border-dashed border-amber-300">
+                  <div className="text-center">
+                    <div className="text-6xl bg-amber-200 w-24 h-24 rounded-full flex items-center justify-center border-4 border-white shadow">👧🏻</div>
+                    <span className="font-bold text-xs bg-amber-200 px-2 py-1 rounded mt-2 inline-block">Laia</span>
+                  </div>
+                  <div className="bg-white p-4 rounded-xl shadow border border-blue-300 flex-1 flex justify-between items-center">
+                    <div>
+                      <p className="text-xl font-black">Hola! 👋 Em dic Laia. I tu?</p>
+                      {idiomaSuport && <p className="text-sm text-slate-500 italic">Привіт! Мене звати Лая. А тебе?</p>}
+                    </div>
+                    <button onClick={() => parlar("Hola! Em dic Laia. I tu?")} className="text-2xl bg-green-500 text-white p-2 rounded-lg">🔊</button>
+                  </div>
+                </div>
+
+                <button onClick={() => setPasActual(2)} className="w-full bg-blue-600 text-white font-bold py-3 rounded-xl shadow">
+                  Continuar / Продовжити ➡️
+                </button>
+              </div>
+            )}
+
+            {pasActual === 2 && (
+              <div className="bg-white p-6 rounded-2xl shadow-lg border">
+                <h2 className="font-bold text-lg mb-4 text-purple-900">2. Què pots dir tu? / Що ти можеш сказати?</h2>
+                <div className="space-y-3 mb-6">
+                  {[
+                    { id: 1, text: "Em dic...", sub: "Мене звати...", ok: true, icon: "🏷️" },
+                    { id: 2, text: "Bon dia!", sub: "Доброго дня!", ok: false, icon: "👋" },
+                    { id: 3, text: "No ho entenc", sub: "Я не розумію", ok: false, icon: "🤔" }
+                  ].map(o => (
+                    <button 
+                      key={o.id}
+                      onClick={() => { setResposta(o.id); parlar(o.text); }}
+                      className={`w-full p-4 rounded-xl border-2 text-left flex justify-between items-center ${resposta === o.id ? (o.ok ? 'bg-green-50 border-green-500' : 'bg-red-50 border-red-400') : 'bg-slate-50'}`}
+                    >
+                      <div>
+                        <p className="font-bold">{o.icon} {o.text}</p>
+                        {idiomaSuport && <p className="text-xs text-slate-500">{o.sub}</p>}
+                      </div>
+                      {resposta === o.id && o.ok && <span>✅</span>}
+                    </button>
+                  ))}
+                </div>
+                {resposta === 1 && (
+                  <button onClick={() => setPasActual(3)} className="w-full bg-green-600 text-white font-bold py-3 rounded-xl shadow">
+                    Molt bé! / Молодець! ➡️
+                  </button>
+                )}
+              </div>
+            )}
+
+            {pasActual === 3 && (
+              <div className="bg-white p-6 rounded-2xl shadow-lg border">
+                <h2 className="font-bold text-lg mb-4 text-emerald-900">3. Com et dius tu? / Як тебе звати?</h2>
+                <div className="my-4 space-y-4">
+                  <div className="flex items-center gap-2 bg-slate-50 p-3 rounded-xl border">
+                    <span className="font-bold">Em dic:</span>
+                    <input 
+                      type="text" 
+                      value={nomAlumne} 
+                      onChange={(e) => setNomAlumne(e.target.value)}
+                      placeholder="Escriu el teu nom..." 
+                      className="p-2 border rounded flex-1 font-bold"
+                    />
+                  </div>
+                  {nomAlumne && (
+                    <div className="bg-amber-100 p-3 rounded-xl flex justify-between items-center">
+                      <p className="font-bold text-amber-900">🗣️ "Em dic {nomAlumne}"</p>
+                      <button onClick={() => parlar(`Em dic ${nomAlumne}`)} className="text-xl">🔊</button>
+                    </div>
+                  )}
+                </div>
+                {nomAlumne && (
+                  <button onClick={() => setPasActual(4)} className="w-full bg-blue-600 text-white font-bold py-3 rounded-xl shadow">
+                    Anar a la platja de Badalona 🏖️ ➡️
+                  </button>
+                )}
+              </div>
+            )}
+
+            {pasActual === 4 && (
+              <div className="bg-white p-6 rounded-2xl shadow-lg border text-center">
+                <h2 className="font-bold text-lg mb-4 text-sky-900">4. Situació a la Platja 🏖️</h2>
+                <div className="bg-sky-50 p-4 rounded-xl space-y-3 mb-6">
+                  <div className="bg-white p-3 rounded-lg border text-left flex justify-between items-center">
+                    <p>👧🏻 <strong>Laia:</strong> Hola! Em dic Laia. Com et dius?</p>
+                    <button onClick={() => parlar("Hola! Em dic Laia. Com et dius?")}>🔊</button>
+                  </div>
+                  <div className="bg-green-100 p-3 rounded-lg border border-green-300 text-left flex justify-between items-center">
+                    <p>🧑🏻‍🎓 <strong>Tu:</strong> Hola, Laia! Em dic {nomAlumne}.</p>
+                    <button onClick={() => parlar(`Hola, Laia! Em dic ${nomAlumne}.`)}>🔊</button>
+                  </div>
+                </div>
+                <button onClick={() => setPasActual(5)} className="w-full bg-green-600 text-white font-bold py-3 rounded-xl shadow">
+                  Completar Missió! 🎉
+                </button>
+              </div>
+            )}
+
+            {pasActual === 5 && (
+              <div className="bg-white p-6 rounded-2xl shadow-lg border text-center">
+                <div className="text-6xl mb-2">🏆</div>
+                <h2 className="text-2xl font-black">Felicitats, {nomAlumne}!</h2>
+                <p className="text-slate-600 mb-4">Passaport Lingüístic actualitzat:</p>
+                <div className="bg-amber-50 p-4 rounded-xl border text-left space-y-2 mb-6">
+                  <p className="font-bold text-green-700">✅ Ja puc saludar en català (Hola! 👋)</p>
+                  <p className="font-bold text-green-700">✅ Ja puc dir el meu nom (Em dic {nomAlumne})</p>
+                </div>
+                <button onClick={() => setPasActual(1)} className="bg-blue-600 text-white font-bold py-2 px-6 rounded-xl">
+                  Tornar a jugar 🔄
+                </button>
+              </div>
+            )}
+          </main>
+
+          {diccionariObert && (
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+              <div className="bg-white rounded-2xl max-w-sm w-full p-4 border-4 border-yellow-400">
+                <div className="flex justify-between items-center mb-3">
+                  <h3 className="font-bold">🔍 Diccionari de Pistes</h3>
+                  <button onClick={() => setDiccionariObert(false)} className="font-bold text-xl">✕</button>
+                </div>
+                <div className="space-y-2 max-h-60 overflow-y-auto">
+                  {diccionari.map((item, i) => (
+                    <div key={i} className="flex justify-between items-center p-2 bg-slate-50 rounded border">
+                      <div>
+                        <p className="font-bold">{item.icone} {item.cat}</p>
+                        <p className="text-xs text-slate-500">{item.ukr}</p>
+                      </div>
+                      <button onClick={() => parlar(item.cat)} className="text-lg">🔊</button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<MissioBadalona />);
+  </script>
+</body>
+</html>
